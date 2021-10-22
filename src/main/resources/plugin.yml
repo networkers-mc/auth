@@ -1,0 +1,15 @@
+name: AuthPlugin
+main: es.networkersmc.authplugin.AuthPlugin
+version: ${project.version}
+depend: [DenderaBukkit]
+
+author: InetAddress
+description: Authentication system for cracked users, used in our authentication nodes.
+website: https://github.com/NetworkersES/AuthPlugin
+
+# Legacy auth commands for people used to AuthMe
+commands:
+  register:
+    aliases: ["r", "reg"]
+  login:
+    aliases: ["l"]
