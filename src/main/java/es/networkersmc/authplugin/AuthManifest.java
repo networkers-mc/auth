@@ -7,5 +7,6 @@ public class AuthManifest extends Manifest {
 
     @Override
     protected void configure() {
+        bindModel(AuthenticationData.class);
     }
 }
