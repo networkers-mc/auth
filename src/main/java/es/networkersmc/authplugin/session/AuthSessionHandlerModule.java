@@ -10,7 +10,6 @@ import es.networkersmc.authplugin.event.WrongPasswordEvent;
 import es.networkersmc.authplugin.security.EncryptionService;
 import es.networkersmc.dendera.bukkit.event.player.UserLoginEvent;
 import es.networkersmc.dendera.bukkit.event.player.UserPreLoginEvent;
-import es.networkersmc.dendera.event.DenderaEvent;
 import es.networkersmc.dendera.event.EventService;
 import es.networkersmc.dendera.module.Module;
 import es.networkersmc.dendera.util.CooldownManager;
@@ -76,22 +75,26 @@ public class AuthSessionHandlerModule implements Module, Listener {
 
         if (currentState == AuthState.REGISTER || currentState == AuthState.CHANGE_PASSWORD) {
             session.setBuffer(password);
-            this.callEventSynchronously(new PasswordInputEvent(player, currentState));
+            sync(() -> {
+                eventService.callEvent(new PasswordInputEvent(player, currentState));
 
-            session.setState(currentState == AuthState.REGISTER
-                    ? AuthState.REGISTER_CONFIRM
-                    : AuthState.CHANGE_PASSWORD_CONFIRM);
+                session.setState(currentState == AuthState.REGISTER
+                        ? AuthState.REGISTER_CONFIRM
+                        : AuthState.CHANGE_PASSWORD_CONFIRM);
+            });
         }
 
         if (currentState == AuthState.REGISTER_CONFIRM || currentState == AuthState.CHANGE_PASSWORD_CONFIRM) {
             String password0 = session.getBuffer();
 
             if (!password0.equals(password)) {
-                this.callEventSynchronously(new WrongPasswordEvent(player, currentState));
+                sync(() -> {
+                    eventService.callEvent(new WrongPasswordEvent(player, currentState));
 
-                session.setState(currentState == AuthState.REGISTER_CONFIRM
-                        ? AuthState.REGISTER
-                        : AuthState.CHANGE_PASSWORD);
+                    session.setState(currentState == AuthState.REGISTER_CONFIRM
+                            ? AuthState.REGISTER
+                            : AuthState.CHANGE_PASSWORD);
+                });
             } else {
                 String passwordHash = encryptionService.hash(password);
 
@@ -112,13 +115,15 @@ public class AuthSessionHandlerModule implements Module, Listener {
         if (correctPassword) {
             this.forceLogin(player, session);
         } else {
-            this.callEventSynchronously(new WrongPasswordEvent(player, session.getState()));
+            sync(() -> eventService.callEvent(new WrongPasswordEvent(player, session.getState())));
         }
     }
 
     private void forceLogin(Player player, AuthSession session) {
-        this.callEventSynchronously(new LoginSuccessEvent(player));
-        session.setState(AuthState.LOGGED_IN);
+        sync(() -> {
+            eventService.callEvent(new LoginSuccessEvent(player));
+            session.setState(AuthState.LOGGED_IN);
+        });
     }
 
     private void onPlayerInput(Player player, AuthSession session, String input) {
@@ -171,8 +176,8 @@ public class AuthSessionHandlerModule implements Module, Listener {
 
     @Inject private MinecraftExecutor minecraftExecutor;
 
-    private void callEventSynchronously(DenderaEvent event) {
-        minecraftExecutor.execute(() -> eventService.callEvent(event));
+    private void sync(Runnable runnable) {
+        minecraftExecutor.execute(runnable);
     }
 
 }
