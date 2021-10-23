@@ -13,6 +13,7 @@ import es.networkersmc.dendera.bukkit.event.player.UserPreLoginEvent;
 import es.networkersmc.dendera.event.DenderaEvent;
 import es.networkersmc.dendera.event.EventService;
 import es.networkersmc.dendera.module.Module;
+import es.networkersmc.dendera.util.CooldownManager;
 import es.networkersmc.dendera.util.bukkit.concurrent.MinecraftExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import javax.inject.Inject;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
 
@@ -141,19 +143,26 @@ public class AuthSessionHandlerModule implements Module, Listener {
     // BUKKIT EVENT LISTENERS
     // ----------------------------
 
+    private final CooldownManager<Player> cooldownManager = new CooldownManager<>();
+
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
-
         Player player = event.getPlayer();
-        AuthSession session = sessions.get(player.getUniqueId());
 
-        this.onPlayerInput(player, session, event.getMessage());
+        if (cooldownManager.hasElapsed(player, 100, ChronoUnit.MILLIS)) {
+            AuthSession session = sessions.get(player.getUniqueId());
+            this.onPlayerInput(player, session, event.getMessage());
+            cooldownManager.update(player);
+        }
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        sessions.remove(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+
+        sessions.remove(player.getUniqueId());
+        cooldownManager.remove(player);
     }
 
     // ----------------------------
