@@ -12,7 +12,7 @@ import java.util.UUID;
 @CollectionName("authenticationdata")
 public class AuthenticationData extends SimpleEntity {
 
-    @Getter @Setter private String password;
+    @Getter @Setter private String passwordHash;
 
     public AuthenticationData() {
         // Constructor for Jackson
