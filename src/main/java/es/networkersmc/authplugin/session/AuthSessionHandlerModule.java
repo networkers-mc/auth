@@ -8,10 +8,14 @@ import es.networkersmc.authplugin.event.LoginSuccessEvent;
 import es.networkersmc.authplugin.event.PasswordInputEvent;
 import es.networkersmc.authplugin.event.WrongPasswordEvent;
 import es.networkersmc.authplugin.security.EncryptionService;
+import es.networkersmc.authplugin.security.PasswordRequirementUtil;
 import es.networkersmc.dendera.bukkit.event.player.UserLoginEvent;
 import es.networkersmc.dendera.bukkit.event.player.UserPreLoginEvent;
+import es.networkersmc.dendera.bukkit.language.PlayerLanguageService;
+import es.networkersmc.dendera.docs.User;
 import es.networkersmc.dendera.event.EventService;
 import es.networkersmc.dendera.module.Module;
+import es.networkersmc.dendera.user.UserDAO;
 import es.networkersmc.dendera.util.CooldownManager;
 import es.networkersmc.dendera.util.bukkit.concurrent.MinecraftExecutor;
 import org.bukkit.entity.Player;
@@ -36,11 +40,13 @@ public class AuthSessionHandlerModule implements Module, Listener {
     @Inject private AuthenticationDataDAO dataDAO;
 
     @Inject private EventService eventService;
+    @Inject private UserDAO userDAO;
+    @Inject private PlayerLanguageService languageService;
 
     @Override
     public void onStart() {
         eventService.registerListener(UserPreLoginEvent.class, event -> {
-            this.load(event.getUser().getUUID());
+            this.load(event.getUser());
         });
 
         eventService.registerListener(UserLoginEvent.class, event -> {
@@ -60,10 +66,11 @@ public class AuthSessionHandlerModule implements Module, Listener {
 
     // Info: Called asynchronously from UserPreLoginEvent
     // Don't worry about sync calls to database
-    private void load(UUID uuid) {
+    private void load(User user) {
+        UUID uuid = user.getUUID();
         AuthSession session = dataRepository.getSync(uuid)
-                .map(data -> new AuthSession(AuthState.LOGIN, data))
-                .orElseGet(() -> new AuthSession(AuthState.REGISTER, dataDAO.create(uuid)));
+                .map(data -> new AuthSession(user, AuthState.LOGIN, data))
+                .orElseGet(() -> new AuthSession(user, AuthState.REGISTER, dataDAO.create(uuid)));
 
         sessions.put(uuid, session);
     }
@@ -74,6 +81,11 @@ public class AuthSessionHandlerModule implements Module, Listener {
         AuthState currentState = session.getState();
 
         if (currentState == AuthState.REGISTER || currentState == AuthState.CHANGE_PASSWORD) {
+            if (!PasswordRequirementUtil.isValid(password)) {
+                languageService.sendMessage(player, session.getUser(), "auth.password-not-valid");
+                return;
+            }
+
             session.setBuffer(password);
             sync(() -> {
                 eventService.callEvent(new PasswordInputEvent(player, currentState));
@@ -127,6 +139,11 @@ public class AuthSessionHandlerModule implements Module, Listener {
     }
 
     private void onPlayerInput(Player player, AuthSession session, String input) {
+        if (input.contains(" ")) {
+            languageService.sendMessage(player, session.getUser(), "auth.password-contains-spaces");
+            return;
+        }
+
         switch (session.getState()) {
             case LOGGED_IN:
                 break;
