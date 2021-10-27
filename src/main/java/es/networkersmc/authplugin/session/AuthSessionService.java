@@ -91,6 +91,7 @@ public class AuthSessionService implements Listener {
                 eventService.callEvent(new PasswordInputEvent(player, session, changingPassword));
                 session.setState(changingPassword ? AuthState.CHANGE_PASSWORD_CONFIRM : AuthState.REGISTER_CONFIRM);
             });
+            return;
         }
 
         if (currentState == AuthState.REGISTER_CONFIRM || currentState == AuthState.CHANGE_PASSWORD_CONFIRM) {
