@@ -13,7 +13,7 @@ public class AuthSession {
     private AuthState state;
     private final AuthenticationData data;
 
-    private String buffer; // For REGISTER_CONFIRM and CHANGE_PASSWORD_CONFIRM states
+    private char[] buffer; // For REGISTER_CONFIRM and CHANGE_PASSWORD_CONFIRM states
 
     public AuthSession(User user, AuthState state, AuthenticationData data) {
         this.user = user;
