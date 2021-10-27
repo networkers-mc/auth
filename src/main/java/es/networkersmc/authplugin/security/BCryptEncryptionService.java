@@ -10,12 +10,12 @@ public class BCryptEncryptionService implements EncryptionService {
     private final BCrypt.Verifyer verifyer = BCrypt.verifyer();
 
     @Override
-    public String hash(String password) {
-        return hasher.hashToString(COST, password.toCharArray());
+    public char[] hash(char[] password) {
+        return hasher.hashToChar(COST, password);
     }
 
     @Override
-    public boolean verify(String password, String hash) {
-        return verifyer.verify(password.toCharArray(), hash.toCharArray()).verified;
+    public boolean verify(char[] password, char[] hash) {
+        return verifyer.verify(password, hash).verified;
     }
 }
