@@ -1,6 +1,7 @@
 name: AuthPlugin
 main: es.networkersmc.authplugin.AuthPlugin
 version: ${project.version}
+load: POSTWORLD
 depend: [DenderaBukkit]
 
 author: InetAddress
