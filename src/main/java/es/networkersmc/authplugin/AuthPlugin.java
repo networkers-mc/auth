@@ -7,6 +7,6 @@ public class AuthPlugin extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        DenderaInjector.getInstance().registerModule(new AuthManifest());
+        DenderaInjector.getInstance().registerModule(new AuthManifest(this));
     }
 }
