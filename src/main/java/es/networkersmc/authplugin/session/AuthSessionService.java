@@ -6,6 +6,7 @@ import es.networkersmc.authplugin.data.AuthenticationDataRepository;
 import es.networkersmc.authplugin.docs.AuthenticationData;
 import es.networkersmc.authplugin.event.LoginFailureEvent;
 import es.networkersmc.authplugin.event.LoginSuccessEvent;
+import es.networkersmc.authplugin.event.PasswordInputErrorEvent;
 import es.networkersmc.authplugin.event.PasswordInputEvent;
 import es.networkersmc.authplugin.security.EncryptionService;
 import es.networkersmc.authplugin.security.PasswordRequirementUtil;
@@ -104,7 +105,7 @@ public class AuthSessionService implements Listener {
 
             if (!passwordsMatch) {
                 sync(() -> {
-                    eventService.callEvent(new LoginFailureEvent(player, session));
+                    eventService.callEvent(new PasswordInputErrorEvent(player, session, changingPassword));
                     session.setState(changingPassword ? AuthState.CHANGE_PASSWORD : AuthState.REGISTER);
                 });
             } else {
