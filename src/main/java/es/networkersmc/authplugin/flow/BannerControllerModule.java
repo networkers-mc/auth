@@ -15,10 +15,7 @@ import es.networkersmc.dendera.network.SwitchboardClient;
 import es.networkersmc.dendera.network.bukkit.BukkitNodeType;
 import es.networkersmc.dendera.network.packet.request.ConnectUserToBestNodePacket;
 import es.networkersmc.dendera.util.bukkit.map.ImageBanner;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -77,6 +74,7 @@ public class BannerControllerModule implements Module, Listener {
         });
 
         eventService.registerListener(LoginSuccessEvent.class, event -> {
+            this.playSound(event.getPlayer(), Sound.ORB_PICKUP, 0);
             // TODO: Maybe "loading" banner?
             switchboardClient.sendPacket(new ConnectUserToBestNodePacket(event.getPlayer().getUniqueId(), BukkitNodeType.HUB));
         });
@@ -84,12 +82,14 @@ public class BannerControllerModule implements Module, Listener {
         eventService.registerListener(LoginFailureEvent.class, event -> {
             Language language = event.getSession().getUser().getLanguage();
 
+            this.playSound(event.getPlayer(), Sound.NOTE_BASS, 0);
             this.updateBanner(event.getPlayer(), language, BannerImage.LOGIN_WRONG_PASSWORD);
         });
 
         eventService.registerListener(PasswordInputEvent.class, event -> {
             Language language = event.getSession().getUser().getLanguage();
 
+            this.playSound(event.getPlayer(), Sound.ORB_PICKUP, 0);
             this.updateBanner(event.getPlayer(), language, BannerImage.CONFIRM_PASSWORD);
         });
 
@@ -99,6 +99,7 @@ public class BannerControllerModule implements Module, Listener {
                     ? BannerImage.CHANGE_PASSWORD_PASSWORDS_DONT_MATCH
                     : BannerImage.REGISTER_PASSWORDS_DONT_MATCH;
 
+            this.playSound(event.getPlayer(), Sound.NOTE_BASS, 0);
             this.updateBanner(event.getPlayer(), language, bannerImage);
         });
     }
@@ -114,6 +115,10 @@ public class BannerControllerModule implements Module, Listener {
         lock = world.spawn(spawnLocation, ArmorStand.class);
         lock.setVisible(false);
         lock.setGravity(false);
+    }
+
+    private void playSound(Player player, Sound sound, float pitch) {
+        player.playSound(player.getLocation(), sound, 1, pitch);
     }
 
     private void updateBanner(Player player, Language language, BannerImage bannerImage) {
