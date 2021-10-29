@@ -2,9 +2,6 @@ package es.networkersmc.authplugin.flow;
 
 import com.google.common.base.Preconditions;
 import es.networkersmc.authplugin.session.AuthSession;
-import es.networkersmc.authplugin.session.AuthSessionService;
-import es.networkersmc.dendera.bukkit.event.player.UserJoinEvent;
-import es.networkersmc.dendera.event.EventService;
 import es.networkersmc.dendera.language.Language;
 import es.networkersmc.dendera.module.Module;
 import es.networkersmc.dendera.util.bukkit.map.ImageBanner;
@@ -27,11 +24,7 @@ import java.io.IOException;
 public class BannerControllerModule implements Module, Listener {
 
     @Inject private @Named("banners-directory") File bannersDirectory;
-
     @Inject private Server server;
-
-    @Inject private EventService eventService;
-    @Inject private AuthSessionService authSessionService;
 
     private ImageBanner banner;
     private ArmorStand lock;
@@ -39,32 +32,30 @@ public class BannerControllerModule implements Module, Listener {
     @Override
     public void onStart() {
         this.setupBanner();
+    }
 
-        eventService.registerListener(UserJoinEvent.class, event -> {
-            Player player = event.getPlayer();
-            AuthSession session = authSessionService.getSession(player.getUniqueId());
-            Language language = session.getUser().getLanguage();
+    public void onJoin(Player player, AuthSession session) {
+        Language language = session.getUser().getLanguage();
 
-            BannerImage bannerImage;
-            switch (session.getState()) {
-                case LOGIN:
-                    bannerImage = BannerImage.LOGIN;
-                    break;
-                case REGISTER:
-                    bannerImage = BannerImage.REGISTER;
-                    break;
-                case CHANGE_PASSWORD:
-                    bannerImage = BannerImage.CHANGE_PASSWORD;
-                    break;
-                default: // This should never happen
-                    player.kickPlayer("There was an error. Please contact with us."); // TODO: ERROR MESSAGE (Dendera)
-                    throw new IllegalStateException("Session state on join wasn't expected: " + session.getState());
-            }
+        BannerImage bannerImage;
+        switch (session.getState()) {
+            case LOGIN:
+                bannerImage = BannerImage.LOGIN;
+                break;
+            case REGISTER:
+                bannerImage = BannerImage.REGISTER;
+                break;
+            case CHANGE_PASSWORD:
+                bannerImage = BannerImage.CHANGE_PASSWORD;
+                break;
+            default: // This should never happen
+                player.kickPlayer("There was an error. Please contact with us."); // TODO: ERROR MESSAGE (Dendera)
+                throw new IllegalStateException("Session state on join wasn't expected: " + session.getState());
+        }
 
-            player.setGameMode(GameMode.SPECTATOR);
-            player.setSpectatorTarget(lock);
-            this.updateBanner(player, language, bannerImage);
-        });
+        player.setGameMode(GameMode.SPECTATOR);
+        player.setSpectatorTarget(lock);
+        this.updateBanner(player, language, bannerImage);
     }
 
     public void onLoginSuccess(Player player) {

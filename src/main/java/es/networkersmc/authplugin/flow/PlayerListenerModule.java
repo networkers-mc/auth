@@ -5,6 +5,7 @@ import es.networkersmc.authplugin.security.PasswordRequirementUtil;
 import es.networkersmc.authplugin.session.AuthSession;
 import es.networkersmc.authplugin.session.AuthSessionService;
 import es.networkersmc.authplugin.session.AuthState;
+import es.networkersmc.dendera.bukkit.event.player.UserJoinEvent;
 import es.networkersmc.dendera.bukkit.event.player.UserLoginEvent;
 import es.networkersmc.dendera.bukkit.event.player.UserPreLoginEvent;
 import es.networkersmc.dendera.bukkit.language.PlayerLanguageService;
@@ -45,9 +46,14 @@ public class PlayerListenerModule implements Module, Listener {
         });
 
         eventService.registerListener(UserLoginEvent.class, event -> {
-            if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
                 authSessionService.unload(event.getPlayer().getUniqueId());
             }
+        });
+
+        eventService.registerListener(UserJoinEvent.class, event -> {
+            Player player = event.getPlayer();
+            bannerControllerModule.onJoin(player, authSessionService.getSession(player.getUniqueId()));
         });
     }
 
