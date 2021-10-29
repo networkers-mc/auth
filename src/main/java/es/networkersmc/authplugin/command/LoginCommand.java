@@ -2,6 +2,7 @@ package es.networkersmc.authplugin.command;
 
 import es.networkersmc.authplugin.session.AuthSession;
 import es.networkersmc.authplugin.session.AuthSessionService;
+import es.networkersmc.authplugin.session.AuthState;
 import es.networkersmc.dendera.bukkit.language.PlayerLanguageService;
 import es.networkersmc.dendera.command.Command;
 import es.networkersmc.dendera.command.annotation.HelpSubCommand;
@@ -39,6 +40,11 @@ public class LoginCommand extends Command {
         }
 
         AuthSession session = sessionService.getSession(player.getUniqueId());
+        if (session.getState() != AuthState.LOGIN) {
+            //TODO: message
+            return;
+        }
+
         String password = parameters.get(0);
 
         FutureUtils.addCallback(
