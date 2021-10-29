@@ -1,19 +1,12 @@
 package es.networkersmc.authplugin.flow;
 
 import com.google.common.base.Preconditions;
-import es.networkersmc.authplugin.event.LoginFailureEvent;
-import es.networkersmc.authplugin.event.LoginSuccessEvent;
-import es.networkersmc.authplugin.event.PasswordInputErrorEvent;
-import es.networkersmc.authplugin.event.PasswordInputEvent;
 import es.networkersmc.authplugin.session.AuthSession;
 import es.networkersmc.authplugin.session.AuthSessionService;
 import es.networkersmc.dendera.bukkit.event.player.UserJoinEvent;
 import es.networkersmc.dendera.event.EventService;
 import es.networkersmc.dendera.language.Language;
 import es.networkersmc.dendera.module.Module;
-import es.networkersmc.dendera.network.SwitchboardClient;
-import es.networkersmc.dendera.network.bukkit.BukkitNodeType;
-import es.networkersmc.dendera.network.packet.request.ConnectUserToBestNodePacket;
 import es.networkersmc.dendera.util.bukkit.map.ImageBanner;
 import org.bukkit.*;
 import org.bukkit.block.BlockFace;
@@ -30,14 +23,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+// Bukkit-synced class, methods should be use synchronously.
 public class BannerControllerModule implements Module, Listener {
 
     @Inject private @Named("banners-directory") File bannersDirectory;
 
-    @Inject private EventService eventService;
-    @Inject private SwitchboardClient switchboardClient;
-
     @Inject private Server server;
+
+    @Inject private EventService eventService;
     @Inject private AuthSessionService authSessionService;
 
     private ImageBanner banner;
@@ -72,36 +65,35 @@ public class BannerControllerModule implements Module, Listener {
             player.setSpectatorTarget(lock);
             this.updateBanner(player, language, bannerImage);
         });
+    }
 
-        eventService.registerListener(LoginSuccessEvent.class, event -> {
-            this.playSound(event.getPlayer(), Sound.ORB_PICKUP, 0);
-            // TODO: Maybe "loading" banner?
-            switchboardClient.sendPacket(new ConnectUserToBestNodePacket(event.getPlayer().getUniqueId(), BukkitNodeType.HUB));
-        });
+    public void onLoginSuccess(Player player) {
+        this.playSound(player, Sound.ORB_PICKUP, 0);
+        // TODO: Maybe "loading" banner?
+    }
 
-        eventService.registerListener(LoginFailureEvent.class, event -> {
-            Language language = event.getSession().getUser().getLanguage();
+    public void onLoginFailure(Player player, AuthSession session) {
+        Language language = session.getUser().getLanguage();
 
-            this.playSound(event.getPlayer(), Sound.NOTE_BASS, 0);
-            this.updateBanner(event.getPlayer(), language, BannerImage.LOGIN_WRONG_PASSWORD);
-        });
+        this.playSound(player, Sound.NOTE_BASS, 0);
+        this.updateBanner(player, language, BannerImage.LOGIN_WRONG_PASSWORD);
+    }
 
-        eventService.registerListener(PasswordInputEvent.class, event -> {
-            Language language = event.getSession().getUser().getLanguage();
+    public void onPasswordInput(Player player, AuthSession session) {
+        Language language = session.getUser().getLanguage();
 
-            this.playSound(event.getPlayer(), Sound.ORB_PICKUP, 0);
-            this.updateBanner(event.getPlayer(), language, BannerImage.CONFIRM_PASSWORD);
-        });
+        this.playSound(player, Sound.ORB_PICKUP, 0);
+        this.updateBanner(player, language, BannerImage.CONFIRM_PASSWORD);
+    }
 
-        eventService.registerListener(PasswordInputErrorEvent.class, event -> {
-            Language language = event.getSession().getUser().getLanguage();
-            BannerImage bannerImage = event.isChangingPassword()
-                    ? BannerImage.CHANGE_PASSWORD_PASSWORDS_DONT_MATCH
-                    : BannerImage.REGISTER_PASSWORDS_DONT_MATCH;
+    public void onPasswordInputError(Player player, AuthSession session, boolean isChangingPassword) {
+        Language language = session.getUser().getLanguage();
+        BannerImage bannerImage = isChangingPassword
+                ? BannerImage.CHANGE_PASSWORD_PASSWORDS_DONT_MATCH
+                : BannerImage.REGISTER_PASSWORDS_DONT_MATCH;
 
-            this.playSound(event.getPlayer(), Sound.NOTE_BASS, 0);
-            this.updateBanner(event.getPlayer(), language, bannerImage);
-        });
+        this.playSound(player, Sound.NOTE_BASS, 0);
+        this.updateBanner(player, language, bannerImage);
     }
 
     private void setupBanner() {
