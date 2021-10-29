@@ -11,10 +11,13 @@ import es.networkersmc.dendera.command.annotation.parameter.Parameters;
 import es.networkersmc.dendera.command.annotation.parameter.Sender;
 import es.networkersmc.dendera.docs.User;
 import es.networkersmc.dendera.minecraft.command.annotation.rule.AllowedExecutor;
+import es.networkersmc.dendera.util.CooldownManager;
 import es.networkersmc.dendera.util.future.FutureUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
+import javax.inject.Named;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @AllowedExecutor(Player.class)
@@ -22,6 +25,8 @@ public class LoginCommand extends Command {
 
     @Inject private PlayerLanguageService languageService;
     @Inject private AuthSessionService sessionService;
+
+    @Inject private @Named("auth-cooldown-manager") CooldownManager<Player> cooldownManager;
 
     public LoginCommand() {
         super("login");
@@ -34,6 +39,11 @@ public class LoginCommand extends Command {
 
     @HelpSubCommand // The subCommand is actually the password
     public void onPasswordInput(@Sender Player player, User user, @Parameters List<String> parameters) {
+        if (!cooldownManager.hasElapsed(player, 100, ChronoUnit.MILLIS)) {
+            return;
+        }
+        cooldownManager.update(player);
+
         if (parameters.size() > 1) {
             languageService.sendMessage(player, user, "auth.password-contains-spaces");
             return;
