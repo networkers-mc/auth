@@ -10,6 +10,7 @@ import es.networkersmc.dendera.command.annotation.parameter.Parameters;
 import es.networkersmc.dendera.command.annotation.parameter.Sender;
 import es.networkersmc.dendera.docs.User;
 import es.networkersmc.dendera.minecraft.command.annotation.rule.AllowedExecutor;
+import es.networkersmc.dendera.util.future.FutureUtils;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -39,7 +40,11 @@ public class LoginCommand extends Command {
 
         AuthSession session = sessionService.getSession(player.getUniqueId());
         String password = parameters.get(0);
-        sessionService.loginAsync(player, session, password);
+
+        FutureUtils.addCallback(
+                sessionService.loginAsync(session, password),
+                ifValidPassword -> sessionService.forceLogin(player),
+                ifWrongPassword -> {/*TODO: message*/});
     }
 
 }
