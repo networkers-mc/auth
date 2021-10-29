@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.time.temporal.ChronoUnit;
 
 public class PlayerListenerModule implements Module, Listener {
@@ -35,7 +36,7 @@ public class PlayerListenerModule implements Module, Listener {
     @Inject private AuthSessionService authSessionService;
     @Inject private BannerControllerModule bannerControllerModule;
 
-    private final CooldownManager<Player> cooldownManager = new CooldownManager<>();
+    @Inject private @Named("auth-cooldown-manager") CooldownManager<Player> cooldownManager;
 
     @Override
     public void onStart() {
