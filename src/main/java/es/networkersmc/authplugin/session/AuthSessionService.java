@@ -7,10 +7,9 @@ import es.networkersmc.authplugin.data.AuthenticationDataDAO;
 import es.networkersmc.authplugin.data.AuthenticationDataRepository;
 import es.networkersmc.authplugin.docs.AuthenticationData;
 import es.networkersmc.authplugin.security.EncryptionService;
+import es.networkersmc.dendera.bukkit.network.NetworkService;
 import es.networkersmc.dendera.docs.User;
-import es.networkersmc.dendera.network.SwitchboardClient;
 import es.networkersmc.dendera.network.bukkit.BukkitNodeType;
-import es.networkersmc.dendera.network.packet.request.ConnectUserToBestNodePacket;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -25,14 +24,12 @@ public class AuthSessionService implements Listener {
 
     private final Map<UUID, AuthSession> sessions = Maps.newConcurrentMap();
 
-    @Inject private EncryptionService encryptionService;
-
     @Inject private ExecutorService asyncExecutor;
+    @Inject private NetworkService networkService;
 
+    @Inject private EncryptionService encryptionService;
     @Inject private AuthenticationDataRepository dataRepository;
     @Inject private AuthenticationDataDAO dataDAO;
-
-    @Inject private SwitchboardClient switchboardClient;
 
     public AuthSession getSession(UUID uuid) {
         return sessions.get(uuid);
@@ -95,7 +92,7 @@ public class AuthSessionService implements Listener {
     }
 
     public void forceLogin(Player player) {
-        switchboardClient.sendPacket(new ConnectUserToBestNodePacket(player.getUniqueId(), BukkitNodeType.HUB));
+        networkService.sendToBestNode(player, BukkitNodeType.HUB);
     }
 
     private void async(Runnable runnable) {
