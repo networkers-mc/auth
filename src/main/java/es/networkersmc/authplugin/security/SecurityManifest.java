@@ -8,5 +8,7 @@ public class SecurityManifest extends Manifest {
     @Override
     protected void configure() {
         bind(EncryptionService.class).to(BCryptEncryptionService.class).in(Scopes.SINGLETON);
+
+        bindModule(NodeSecurityModule.class);
     }
 }
