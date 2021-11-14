@@ -1,6 +1,7 @@
 package es.networkersmc.authplugin.command;
 
 import es.networkersmc.authplugin.security.EncryptionService;
+import es.networkersmc.authplugin.security.PasswordRequirementUtil;
 import es.networkersmc.authplugin.session.AuthSession;
 import es.networkersmc.authplugin.session.AuthSessionService;
 import es.networkersmc.authplugin.session.AuthState;
@@ -69,6 +70,11 @@ public class RegisterCommand extends Command {
 
         if (!passwordsMatch) {
             //TODO: message
+            return;
+        }
+
+        if (!PasswordRequirementUtil.isValid(password1)) {
+            languageService.sendMessage(player, session.getUser(), "auth.password-not-valid");
             return;
         }
 
