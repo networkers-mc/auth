@@ -44,6 +44,11 @@ public class LoginCommand extends Command {
         }
         cooldownManager.update(player);
 
+        if (parameters.size() < 1) {
+            this.sendDeprecatedMessage(player, user, "auth.command.login.usage");
+            return;
+        }
+
         if (parameters.size() > 1) {
             this.sendDeprecatedMessage(player, user, "auth.password-contains-spaces");
             return;
