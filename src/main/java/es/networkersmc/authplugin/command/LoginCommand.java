@@ -34,7 +34,7 @@ public class LoginCommand extends Command {
 
     @NoArgsSubCommand
     public void noArgs(@Sender Player player, User user) {
-        languageService.sendMessage(player, user, "auth.command.login.deprecated");
+        this.sendDeprecatedMessage(player, user);
     }
 
     @HelpSubCommand // The subCommand is actually the password
@@ -45,13 +45,13 @@ public class LoginCommand extends Command {
         cooldownManager.update(player);
 
         if (parameters.size() > 1) {
-            languageService.sendMessage(player, user, "auth.password-contains-spaces");
+            this.sendDeprecatedMessage(player, user, "auth.password-contains-spaces");
             return;
         }
 
         AuthSession session = sessionService.getSession(player.getUniqueId());
         if (session.getState() != AuthState.LOGIN) {
-            //TODO: message
+            this.sendDeprecatedMessage(player, user);
             return;
         }
 
@@ -60,7 +60,16 @@ public class LoginCommand extends Command {
         FutureUtils.addCallback(
                 sessionService.loginAsync(session, password),
                 ifValidPassword -> sessionService.forceLogin(player),
-                ifWrongPassword -> {/*TODO: message*/});
+                ifWrongPassword -> this.sendDeprecatedMessage(player, user, "auth.command.login.wrong-password"));
+    }
+
+    private void sendDeprecatedMessage(Player player, User user) {
+        languageService.sendMessage(player, user, "auth.command.login.deprecated");
+    }
+
+    private void sendDeprecatedMessage(Player player, User user, String anotherMessageId, String... parameters) {
+        this.sendDeprecatedMessage(player, user);
+        languageService.sendMessage(player, user, anotherMessageId, parameters);
     }
 
 }

@@ -49,12 +49,12 @@ public class RegisterCommand extends Command {
         cooldownManager.update(player);
 
         if (parameters.size() < 2) {
-            languageService.sendMessage(player, user, "auth.command.register.usage");
+            this.sendDeprecatedMessage(player, user, "auth.command.register.usage");
             return;
         }
 
         if (parameters.size() > 2) {
-            languageService.sendMessage(player, user, "auth.password-contains-spaces");
+            this.sendDeprecatedMessage(player, user, "auth.password-contains-spaces");
             return;
         }
 
@@ -69,12 +69,12 @@ public class RegisterCommand extends Command {
         boolean passwordsMatch = password1.equals(password2);
 
         if (!passwordsMatch) {
-            //TODO: message
+            this.sendDeprecatedMessage(player, user, "auth.command.register.passwords-do-not-match");
             return;
         }
 
         if (!PasswordRequirementUtil.isValid(password1)) {
-            languageService.sendMessage(player, session.getUser(), "auth.password-not-valid");
+            this.sendDeprecatedMessage(player, user, "auth.password-not-valid");
             return;
         }
 
@@ -87,5 +87,10 @@ public class RegisterCommand extends Command {
 
     private void sendDeprecatedMessage(Player player, User user) {
         languageService.sendMessage(player, user, "auth.command.register.deprecated");
+    }
+
+    private void sendDeprecatedMessage(Player player, User user, String anotherMessageId, String... parameters) {
+        this.sendDeprecatedMessage(player, user);
+        languageService.sendMessage(player, user, anotherMessageId, parameters);
     }
 }
