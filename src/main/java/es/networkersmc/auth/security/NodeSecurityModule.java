@@ -3,7 +3,7 @@ package es.networkersmc.auth.security;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import es.networkersmc.auth.session.AuthSession;
-import es.networkersmc.auth.session.AuthSessionService;
+import es.networkersmc.auth.session.AuthSessionCache;
 import es.networkersmc.auth.session.AuthState;
 import es.networkersmc.dendera.module.Module;
 import org.bukkit.Server;
@@ -15,13 +15,13 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import java.util.Set;
 
 /**
- * Module to manage the Minecraft node security.
+ * Module to manage the node security.
  */
 public class NodeSecurityModule implements Module, Listener {
 
     private final Set<String> allowedCommands = Sets.newHashSet();
 
-    @Inject private AuthSessionService sessionService;
+    @Inject private AuthSessionCache authSessionCache;
     @Inject private Server bukkit;
 
     @Override
@@ -32,7 +32,7 @@ public class NodeSecurityModule implements Module, Listener {
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        AuthSession session = sessionService.getSession(player.getUniqueId());
+        AuthSession session = authSessionCache.getSession(player.getUniqueId());
 
         if (session.getState() == AuthState.LOGGED_IN) {
             return;
@@ -57,5 +57,4 @@ public class NodeSecurityModule implements Module, Listener {
                     .forEach(allowedCommands::add);
         }
     }
-
 }

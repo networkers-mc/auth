@@ -1,6 +1,6 @@
 package es.networkersmc.auth.flow;
 
-public enum BannerImage {
+public enum BannerImageName {
 
     LOGIN,
     LOGIN_WRONG_PASSWORD,

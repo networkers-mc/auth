@@ -10,15 +10,14 @@ import lombok.Setter;
 public class AuthSession {
 
     private final User user;
-    private AuthState state;
     private final AuthenticationData data;
 
+    private AuthState state;
     private char[] buffer; // For REGISTER_CONFIRM and CHANGE_PASSWORD_CONFIRM states
 
-    public AuthSession(User user, AuthState state, AuthenticationData data) {
+    public AuthSession(User user, AuthenticationData data, AuthState state) {
         this.user = user;
-        this.state = state;
         this.data = data;
+        this.state = state;
     }
-
 }

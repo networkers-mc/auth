@@ -3,7 +3,7 @@ package es.networkersmc.auth.security;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class PasswordRequirementUtil {
+public class PasswordRequirements {
 
     public boolean isValid(String password) {
         return len(password) && chars(password);

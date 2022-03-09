@@ -1,8 +1,9 @@
 package es.networkersmc.auth.command;
 
 import es.networkersmc.auth.security.EncryptionService;
-import es.networkersmc.auth.security.PasswordRequirementUtil;
+import es.networkersmc.auth.security.PasswordRequirements;
 import es.networkersmc.auth.session.AuthSession;
+import es.networkersmc.auth.session.AuthSessionCache;
 import es.networkersmc.auth.session.AuthSessionService;
 import es.networkersmc.auth.session.AuthState;
 import es.networkersmc.dendera.bukkit.language.PlayerLanguageService;
@@ -25,19 +26,19 @@ import java.util.List;
 @AllowedExecutor(Player.class)
 public class RegisterCommand extends Command {
 
+    @Inject private @Named("auth-cooldown-manager") CooldownManager<Player> cooldownManager;
     @Inject private PlayerLanguageService languageService;
 
+    @Inject private AuthSessionCache sessionCache;
     @Inject private AuthSessionService sessionService;
     @Inject private EncryptionService encryptionService;
-
-    @Inject private @Named("auth-cooldown-manager") CooldownManager<Player> cooldownManager;
 
     public RegisterCommand() {
         super("register");
     }
 
     @NoArgsSubCommand
-    public void noArgs(@Sender Player player, User user) {
+    public void register(@Sender Player player, User user) {
         this.sendDeprecatedMessage(player, user);
     }
 
@@ -58,7 +59,7 @@ public class RegisterCommand extends Command {
             return;
         }
 
-        AuthSession session = sessionService.getSession(player.getUniqueId());
+        AuthSession session = sessionCache.getSession(player.getUniqueId());
         if (session.getState() != AuthState.REGISTER) {
             this.sendDeprecatedMessage(player, user);
             return;
@@ -73,7 +74,7 @@ public class RegisterCommand extends Command {
             return;
         }
 
-        if (!PasswordRequirementUtil.isValid(password1)) {
+        if (!PasswordRequirements.isValid(password1)) {
             this.sendDeprecatedMessage(player, user, "auth.password-not-valid");
             return;
         }
@@ -81,7 +82,7 @@ public class RegisterCommand extends Command {
         session.setState(AuthState.LOGGED_IN);
         FutureUtils.onSuccess(
                 sessionService.registerAsync(session, encryptionService.hash(password1.toCharArray())),
-                onFinish -> sessionService.forceLogin(player)
+                __ -> sessionService.sendToHub(player)
         );
     }
 

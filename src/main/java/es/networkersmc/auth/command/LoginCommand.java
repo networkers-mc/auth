@@ -1,6 +1,7 @@
 package es.networkersmc.auth.command;
 
 import es.networkersmc.auth.session.AuthSession;
+import es.networkersmc.auth.session.AuthSessionCache;
 import es.networkersmc.auth.session.AuthSessionService;
 import es.networkersmc.auth.session.AuthState;
 import es.networkersmc.dendera.bukkit.language.PlayerLanguageService;
@@ -23,17 +24,18 @@ import java.util.List;
 @AllowedExecutor(Player.class)
 public class LoginCommand extends Command {
 
-    @Inject private PlayerLanguageService languageService;
-    @Inject private AuthSessionService sessionService;
-
     @Inject private @Named("auth-cooldown-manager") CooldownManager<Player> cooldownManager;
+    @Inject private PlayerLanguageService languageService;
+
+    @Inject private AuthSessionCache sessionCache;
+    @Inject private AuthSessionService sessionService;
 
     public LoginCommand() {
         super("login");
     }
 
     @NoArgsSubCommand
-    public void noArgs(@Sender Player player, User user) {
+    public void login(@Sender Player player, User user) {
         this.sendDeprecatedMessage(player, user);
     }
 
@@ -54,7 +56,7 @@ public class LoginCommand extends Command {
             return;
         }
 
-        AuthSession session = sessionService.getSession(player.getUniqueId());
+        AuthSession session = sessionCache.getSession(player.getUniqueId());
         if (session.getState() != AuthState.LOGIN) {
             this.sendDeprecatedMessage(player, user);
             return;
@@ -63,9 +65,10 @@ public class LoginCommand extends Command {
         String password = parameters.get(0);
 
         FutureUtils.addCallback(
-                sessionService.loginAsync(session, password),
-                ifValidPassword -> sessionService.forceLogin(player),
-                ifWrongPassword -> this.sendDeprecatedMessage(player, user, "auth.command.login.wrong-password"));
+                sessionService.verifyPasswordAsync(session, password),
+                __ -> sessionService.sendToHub(player),
+                __ -> this.sendDeprecatedMessage(player, user, "auth.command.login.wrong-password")
+        );
     }
 
     private void sendDeprecatedMessage(Player player, User user) {
@@ -76,5 +79,4 @@ public class LoginCommand extends Command {
         this.sendDeprecatedMessage(player, user);
         languageService.sendMessage(player, user, anotherMessageId, parameters);
     }
-
 }

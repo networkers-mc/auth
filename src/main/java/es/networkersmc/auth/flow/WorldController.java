@@ -1,7 +1,6 @@
 package es.networkersmc.auth.flow;
 
 import es.networkersmc.dendera.module.Module;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -12,23 +11,18 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 
 import javax.inject.Inject;
 
-public class WorldManagerModule implements Module, Listener {
+public class WorldController implements Module, Listener {
 
     @Inject private Server server;
 
     @Override
     public void onStart() {
-        Bukkit.setIgnorePlayerData(true);
+        server.setIgnorePlayerData(true);
 
         World world = server.getWorlds().get(0);
         world.setAutoSave(false);
-
         world.setFullTime(12000);
         world.setGameRuleValue("doDaylightCycle", "false");
-        this.removeThunder(world);
-    }
-
-    private void removeThunder(World world) {
         world.setStorm(false);
         world.setThundering(false);
     }
@@ -45,6 +39,7 @@ public class WorldManagerModule implements Module, Listener {
 
     @EventHandler
     public void onWeather(WeatherChangeEvent event) {
-        this.removeThunder(event.getWorld());
+        if (event.toWeatherState())
+            event.setCancelled(true);
     }
 }
