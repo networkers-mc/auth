@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.docs;
+package es.networkersmc.auth.docs;
 
 import es.networkersmc.dendera.database.annotation.CollectionName;
 import es.networkersmc.dendera.database.annotation.DatabaseName;

@@ -1,2 +1,2 @@
-# AuthPlugin
-Authentication system for cracked users, used in our authentication nodes.
+# The Networkers Minecraft network authentication service
+Authentication service for cracked users.

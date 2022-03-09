@@ -1,12 +1,12 @@
-package es.networkersmc.authplugin.session;
+package es.networkersmc.auth.session;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import es.networkersmc.authplugin.data.AuthenticationDataDAO;
-import es.networkersmc.authplugin.data.AuthenticationDataRepository;
-import es.networkersmc.authplugin.docs.AuthenticationData;
-import es.networkersmc.authplugin.security.EncryptionService;
+import es.networkersmc.auth.data.AuthenticationDataDAO;
+import es.networkersmc.auth.data.AuthenticationDataRepository;
+import es.networkersmc.auth.docs.AuthenticationData;
+import es.networkersmc.auth.security.EncryptionService;
 import es.networkersmc.dendera.bukkit.network.NetworkService;
 import es.networkersmc.dendera.docs.User;
 import es.networkersmc.dendera.network.bukkit.BukkitNodeType;

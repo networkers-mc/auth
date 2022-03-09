@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.security;
+package es.networkersmc.auth.security;
 
 import lombok.experimental.UtilityClass;
 

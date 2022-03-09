@@ -1,12 +1,12 @@
 name: AuthPlugin
-main: es.networkersmc.authplugin.AuthPlugin
+main: es.networkersmc.auth.AuthPlugin
 version: ${project.version}
 load: POSTWORLD
 depend: [DenderaBukkit]
 
-author: InetAddress
-description: Authentication system for cracked users, used in our authentication nodes.
-website: https://github.com/NetworkersES/AuthPlugin
+author: Alberto Mimbrero
+description: Authentication service for the Networkers Minecraft network.
+website: https://github.com/NetworkersES/auth
 
 # Legacy auth commands for people used to AuthMe
 commands:

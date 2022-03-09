@@ -1,7 +1,7 @@
-package es.networkersmc.authplugin.flow;
+package es.networkersmc.auth.flow;
 
 import com.google.common.base.Preconditions;
-import es.networkersmc.authplugin.session.AuthSession;
+import es.networkersmc.auth.session.AuthSession;
 import es.networkersmc.dendera.language.Language;
 import es.networkersmc.dendera.module.Module;
 import es.networkersmc.dendera.util.bukkit.map.ImageBanner;

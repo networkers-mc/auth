@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.session;
+package es.networkersmc.auth.session;
 
 public enum AuthState {
 

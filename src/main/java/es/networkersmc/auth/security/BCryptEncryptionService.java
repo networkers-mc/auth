@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.security;
+package es.networkersmc.auth.security;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 

@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin;
+package es.networkersmc.auth;
 
 import es.networkersmc.dendera.DenderaInjector;
 import org.bukkit.plugin.java.JavaPlugin;

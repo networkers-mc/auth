@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.flow;
+package es.networkersmc.auth.flow;
 
 import es.networkersmc.dendera.module.Module;
 import org.bukkit.Bukkit;

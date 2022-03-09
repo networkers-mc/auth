@@ -1,6 +1,6 @@
-package es.networkersmc.authplugin.data;
+package es.networkersmc.auth.data;
 
-import es.networkersmc.authplugin.docs.AuthenticationData;
+import es.networkersmc.auth.docs.AuthenticationData;
 import es.networkersmc.dendera.database.DatabaseCollection;
 
 import javax.inject.Inject;

@@ -1,8 +1,8 @@
-package es.networkersmc.authplugin.command;
+package es.networkersmc.auth.command;
 
-import es.networkersmc.authplugin.session.AuthSession;
-import es.networkersmc.authplugin.session.AuthSessionService;
-import es.networkersmc.authplugin.session.AuthState;
+import es.networkersmc.auth.session.AuthSession;
+import es.networkersmc.auth.session.AuthSessionService;
+import es.networkersmc.auth.session.AuthState;
 import es.networkersmc.dendera.bukkit.language.PlayerLanguageService;
 import es.networkersmc.dendera.command.Command;
 import es.networkersmc.dendera.command.annotation.HelpSubCommand;

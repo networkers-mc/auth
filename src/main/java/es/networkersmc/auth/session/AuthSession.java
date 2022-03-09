@@ -1,6 +1,6 @@
-package es.networkersmc.authplugin.session;
+package es.networkersmc.auth.session;
 
-import es.networkersmc.authplugin.docs.AuthenticationData;
+import es.networkersmc.auth.docs.AuthenticationData;
 import es.networkersmc.dendera.docs.User;
 import lombok.Getter;
 import lombok.Setter;

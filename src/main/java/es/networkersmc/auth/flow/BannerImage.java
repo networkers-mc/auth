@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.flow;
+package es.networkersmc.auth.flow;
 
 public enum BannerImage {
 

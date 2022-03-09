@@ -1,10 +1,10 @@
-package es.networkersmc.authplugin.flow;
+package es.networkersmc.auth.flow;
 
-import es.networkersmc.authplugin.security.EncryptionService;
-import es.networkersmc.authplugin.security.PasswordRequirementUtil;
-import es.networkersmc.authplugin.session.AuthSession;
-import es.networkersmc.authplugin.session.AuthSessionService;
-import es.networkersmc.authplugin.session.AuthState;
+import es.networkersmc.auth.security.EncryptionService;
+import es.networkersmc.auth.security.PasswordRequirementUtil;
+import es.networkersmc.auth.session.AuthSession;
+import es.networkersmc.auth.session.AuthSessionService;
+import es.networkersmc.auth.session.AuthState;
 import es.networkersmc.dendera.bukkit.event.player.UserJoinEvent;
 import es.networkersmc.dendera.bukkit.event.player.UserLoginEvent;
 import es.networkersmc.dendera.bukkit.event.player.UserPreLoginEvent;

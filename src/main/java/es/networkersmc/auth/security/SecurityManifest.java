@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.security;
+package es.networkersmc.auth.security;
 
 import com.google.inject.Scopes;
 import es.networkersmc.dendera.inject.Manifest;

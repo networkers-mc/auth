@@ -1,10 +1,10 @@
-package es.networkersmc.authplugin;
+package es.networkersmc.auth;
 
 import com.google.inject.name.Names;
-import es.networkersmc.authplugin.command.CommandsManifest;
-import es.networkersmc.authplugin.docs.AuthenticationData;
-import es.networkersmc.authplugin.flow.FlowManifest;
-import es.networkersmc.authplugin.security.SecurityManifest;
+import es.networkersmc.auth.command.CommandsManifest;
+import es.networkersmc.auth.docs.AuthenticationData;
+import es.networkersmc.auth.flow.FlowManifest;
+import es.networkersmc.auth.security.SecurityManifest;
 import es.networkersmc.dendera.inject.Manifest;
 import es.networkersmc.dendera.util.CooldownManager;
 import es.networkersmc.dendera.util.inject.ParametrizedType;

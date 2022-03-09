@@ -1,8 +1,8 @@
-package es.networkersmc.authplugin.data;
+package es.networkersmc.auth.data;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-import es.networkersmc.authplugin.docs.AuthenticationData;
+import es.networkersmc.auth.docs.AuthenticationData;
 import es.networkersmc.dendera.user.UserNotFoundException;
 import es.networkersmc.dendera.util.NullableOptional;
 

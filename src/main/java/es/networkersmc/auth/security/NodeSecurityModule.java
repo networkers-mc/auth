@@ -1,10 +1,10 @@
-package es.networkersmc.authplugin.security;
+package es.networkersmc.auth.security;
 
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import es.networkersmc.authplugin.session.AuthSession;
-import es.networkersmc.authplugin.session.AuthSessionService;
-import es.networkersmc.authplugin.session.AuthState;
+import es.networkersmc.auth.session.AuthSession;
+import es.networkersmc.auth.session.AuthSessionService;
+import es.networkersmc.auth.session.AuthState;
 import es.networkersmc.dendera.module.Module;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;

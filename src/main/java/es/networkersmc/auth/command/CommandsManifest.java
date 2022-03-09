@@ -1,4 +1,4 @@
-package es.networkersmc.authplugin.command;
+package es.networkersmc.auth.command;
 
 import es.networkersmc.dendera.inject.Manifest;
 
