@@ -5,6 +5,8 @@ import es.networkersmc.dendera.docs.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
+
 @Getter
 @Setter
 public class AuthSession {
@@ -19,5 +21,15 @@ public class AuthSession {
         this.user = user;
         this.data = data;
         this.state = state;
+    }
+
+    public void clearBuffer() {
+        Arrays.fill(buffer, (char) 0x00);
+        buffer = null;
+    }
+
+    @Override
+    protected void finalize() {
+        this.clearBuffer();
     }
 }

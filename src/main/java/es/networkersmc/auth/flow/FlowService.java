@@ -66,23 +66,18 @@ public class FlowService {
 
     public void handlePasswordConfirm(Player player, AuthSession session, String password) {
         boolean isChangingPassword = session.getState() == AuthState.CHANGE_PASSWORD_CONFIRM;
-
-        char[] hash = session.getBuffer();
-        boolean passwordsMatch = encryptionService.verify(password.toCharArray(), hash);
+        boolean passwordsMatch = encryptionService.verify(password.toCharArray(), session.getBuffer());
 
         if (!passwordsMatch) {
             session.setState(isChangingPassword ? AuthState.CHANGE_PASSWORD : AuthState.REGISTER);
             sync(() -> bannerService.displayPasswordsDontMatch(player, session, isChangingPassword));
         } else {
             session.setState(AuthState.LOGGED_IN);
-            authSessionService.registerSync(session, hash);
+            authSessionService.registerSync(session, session.getBuffer());
             authSessionService.sendToHub(player);
         }
 
-        for (int i = 0; i < hash.length; i++) {
-            hash[0] = 0x00;
-        }
-        session.setBuffer(null);
+        session.clearBuffer();
     }
 
     private void sync(Runnable runnable) {
