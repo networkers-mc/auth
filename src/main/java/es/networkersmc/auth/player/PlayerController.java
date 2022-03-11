@@ -14,9 +14,8 @@ import es.networkersmc.dendera.util.CooldownManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.*;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -61,5 +60,25 @@ public class PlayerController implements Module, Listener {
         Player player = event.getPlayer();
         cooldownManager.remove(player);
         authSessionCache.remove(player.getUniqueId());
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        event.setCancelled(true);
     }
 }
