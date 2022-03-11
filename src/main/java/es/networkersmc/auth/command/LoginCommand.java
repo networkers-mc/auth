@@ -65,7 +65,7 @@ public class LoginCommand extends Command {
         String password = parameters.get(0);
 
         FutureUtils.addCallback(
-                sessionService.verifyPasswordAsync(session, password),
+                sessionService.assertThatPasswordMatches(session, password),
                 __ -> sessionService.sendToHub(player),
                 __ -> this.sendDeprecatedMessage(player, user, "auth.command.login.wrong-password")
         );

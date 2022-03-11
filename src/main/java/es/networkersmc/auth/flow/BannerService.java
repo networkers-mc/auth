@@ -3,6 +3,7 @@ package es.networkersmc.auth.flow;
 import com.google.common.base.Preconditions;
 import es.networkersmc.auth.session.AuthSession;
 import es.networkersmc.dendera.language.Language;
+import es.networkersmc.dendera.minecraft.documentation.Sync;
 import es.networkersmc.dendera.module.Module;
 import es.networkersmc.dendera.util.bukkit.map.ImageBanner;
 import lombok.Getter;
@@ -17,7 +18,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-// Bukkit-synced class, methods should be use synchronously.
 public class BannerService implements Module {
 
     private final File BANNERS_DIRECTORY = new File("banners");
@@ -40,6 +40,7 @@ public class BannerService implements Module {
         lock.setGravity(false);
     }
 
+    @Sync
     public void setup(Player player, AuthSession session) {
         Language language = session.getUser().getLanguage();
 
@@ -48,7 +49,8 @@ public class BannerService implements Module {
             case LOGIN: bannerImageName = BannerImageName.LOGIN; break;
             case REGISTER: bannerImageName = BannerImageName.REGISTER; break;
             case CHANGE_PASSWORD: bannerImageName = BannerImageName.CHANGE_PASSWORD; break;
-            default: // This should never happen
+            default:
+                // This should never happen
                 player.kickPlayer("There was an error. Please contact with us."); // TODO: ERROR MESSAGE (Dendera)
                 throw new IllegalStateException("Session state on join wasn't expected: " + session.getState());
         }
@@ -58,10 +60,12 @@ public class BannerService implements Module {
         this.updateBanner(player, language, bannerImageName);
     }
 
+    @Sync
     public void displayLoggedIn(Player player) {
         this.playSound(player, Sound.ORB_PICKUP);
     }
 
+    @Sync
     public void displayWrongPassword(Player player, AuthSession session) {
         Language language = session.getUser().getLanguage();
 
@@ -69,6 +73,7 @@ public class BannerService implements Module {
         this.updateBanner(player, language, BannerImageName.LOGIN_WRONG_PASSWORD);
     }
 
+    @Sync
     public void displayConfirmPassword(Player player, AuthSession session) {
         Language language = session.getUser().getLanguage();
 
@@ -76,6 +81,7 @@ public class BannerService implements Module {
         this.updateBanner(player, language, BannerImageName.CONFIRM_PASSWORD);
     }
 
+    @Sync
     public void displayPasswordsDontMatch(Player player, AuthSession session, boolean isChangingPassword) {
         Language language = session.getUser().getLanguage();
         BannerImageName bannerImageName = isChangingPassword

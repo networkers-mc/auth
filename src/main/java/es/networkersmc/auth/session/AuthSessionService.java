@@ -1,7 +1,7 @@
 package es.networkersmc.auth.session;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import es.networkersmc.auth.data.AuthenticationDataRepository;
 import es.networkersmc.auth.docs.AuthenticationData;
 import es.networkersmc.auth.security.EncryptionService;
@@ -11,50 +11,40 @@ import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.concurrent.ExecutorService;
 
+// Has both sync and async solutions because we have to support chat (async event) and commands (sync).
 @Singleton
 public class AuthSessionService {
 
-    @Inject private ExecutorService executorService;
+    @Inject private ListeningExecutorService executorService;
 
     @Inject private EncryptionService encryptionService;
     @Inject private AuthenticationDataRepository dataRepository;
     @Inject private SwitchboardService switchboardService;
 
     /**
-     * Checks if the given password is the provided user's password.
-     *
-     * @return {@code true} if the password is valid, {@code false} otherwise.
+     * Sets the given password hash to the user. Saves into database.
      */
-    public boolean verifyPasswordSync(AuthSession session, String input) {
-        return encryptionService.verify(input, session.getData().getPasswordHash());
-    }
-
-    public void registerSync(AuthSession session, char[] hash) { // asks for the hashed password because Flow stores it hashed
+    public void registerSync(AuthSession session, char[] hash) { // asks for the hashed password because it's buffered hashed
         AuthenticationData data = session.getData();
         data.setPasswordHash(new String(hash));
         dataRepository.updateSync(data);
     }
 
-    public ListenableFuture<Void> registerAsync(AuthSession session, char[] hash) {
-        SettableFuture<Void> future = SettableFuture.create();
-        executorService.submit(() -> {
-            this.registerSync(session, hash);
-            future.set(null);
-        });
-        return future;
+    public ListenableFuture<?> registerAsync(AuthSession session, char[] hash) {
+        return executorService.submit(() -> this.registerSync(session, hash));
     }
 
-    public ListenableFuture<Void> verifyPasswordAsync(AuthSession session, String input) {
-        SettableFuture<Void> future = SettableFuture.create();
-        executorService.submit(() -> {
-            if (this.verifyPasswordSync(session, input))
-                future.set(null);
-            else
-                future.setException(new IllegalAccessException());
-        });
-        return future;
+    /**
+     * Checks if the given password is the provided user's password. Throws {@link IllegalArgumentException} if not.
+     */
+    public void assertThatPasswordMatchesSync(AuthSession session, String input) throws IllegalArgumentException {
+        if (!encryptionService.verify(input, session.getData().getPasswordHash()))
+            throw new IllegalArgumentException("invalid password");
+    }
+
+    public ListenableFuture<?> assertThatPasswordMatches(AuthSession session, String input) {
+        return executorService.submit(() -> this.assertThatPasswordMatchesSync(session, input));
     }
 
     public void sendToHub(Player player) {

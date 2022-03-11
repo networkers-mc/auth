@@ -65,23 +65,23 @@ public class RegisterCommand extends Command {
             return;
         }
 
-        String password1 = parameters.get(0);
-        String password2 = parameters.get(1);
-        boolean passwordsMatch = password1.equals(password2);
+        String password = parameters.get(0);
+        String passwordRepeat = parameters.get(1);
+        boolean passwordsMatch = password.equals(passwordRepeat);
 
         if (!passwordsMatch) {
             this.sendDeprecatedMessage(player, user, "auth.command.register.passwords-do-not-match");
             return;
         }
 
-        if (!PasswordRequirements.isValid(password1)) {
+        if (!PasswordRequirements.isValid(password)) {
             this.sendDeprecatedMessage(player, user, "auth.password-not-valid");
             return;
         }
 
         session.setState(AuthState.LOGGED_IN);
         FutureUtils.onSuccess(
-                sessionService.registerAsync(session, encryptionService.hash(password1.toCharArray())),
+                sessionService.registerAsync(session, encryptionService.hash(password.toCharArray())),
                 __ -> sessionService.sendToHub(player)
         );
     }
